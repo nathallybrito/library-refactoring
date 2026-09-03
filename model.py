@@ -6,22 +6,43 @@ class Price:
         pass
 
 class RegulaPrice(Price):
-    pass
+    def get_charge(self, days_rented: int) -> float:
+        amount = 2
+        if days_rented > 2:
+            amount += (days_rented - 2) * 1.5
+        return amount
+
+    def get_frequent_renter_points(self, days_rented: int) -> int:
+        return 1
 
 class NewReleasePrice(Price):
-    pass
+    def get_charge(self, days_rented: int) -> float:
+        return days_rented * 3
+
+    def get_frequent_renter_points(self, days_rented: int) -> int:
+        points = 1
+        if days_rented > 1:
+            points += 1
+        return points
 
 class ChildrenPrice(Price):
-    pass
-class Book:
+    def get_charge(self, days_rented: int) -> float:
+        amount = 1.5
+        if days_rented > 3:
+            amount += (days_rented - 3) * 1.5
+        return amount
+        
+    def get_frequent_renter_points(self, days_rented: int) -> int:
+        return 1
 
+class Book:
     REGULAR: int = 0
     NEW_RELEASE: int = 1
     CHILDREN: int = 2
 
     def __init__(self, title: str, price_code: int):
         self.title = title
-        self.price_code = self.create_price(price_code)
+        self.price = self.create_price(price_code)
     
     def create_price(self, price_code: int):  
         if price_code == Book.NEW_RELEASE:
@@ -41,16 +62,13 @@ class Rental:
         self.book = book
         self.days_rented = days_rented
 
-    # Método agora apenas delega
     def get_charge(self) -> float:
         return self.book.get_charge(self.days_rented)
 
-    # get_frequent_renter_points continua igual por enquanto...
     def get_frequent_renter_points(self) -> int:
         return self.book.get_frequent_renter_points(self.days_rented)
 
 class Client:
-
     def __init__(self, name: str):
         self.name = name
         self.rentals = []
@@ -59,7 +77,6 @@ class Client:
         self.rentals.append(rental)
 
     def statement(self) -> str:
-
         total_amount = 0
         frequent_renter_points = 0
         result = f"Rental summary for {self.name}\n"
